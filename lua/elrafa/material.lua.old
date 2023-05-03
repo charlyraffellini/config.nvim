@@ -1,4 +1,7 @@
+local colors = require 'material.colors'
+
 vim.g.material_style = "lighter"
+
 require('material').setup({
 
     contrast = {
@@ -60,5 +63,5 @@ require('material').setup({
 
     custom_colors = nil, -- If you want to everride the default colors, set this to a function
 
-    custom_highlights = {}, -- Overwrite highlights with your own
+    custom_highlights = { }, -- Overwrite highlights with your own
 })

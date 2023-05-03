@@ -13,11 +13,19 @@ return require('packer').startup(function(use)
 	  requires = { {'nvim-lua/plenary.nvim'} }
   }
 
+--  use({
+--	  'marko-cerovac/material.nvim',
+--	  as = 'lighter',
+--	  config = function()
+--		  vim.cmd('colorscheme material')
+--	  end
+ -- })
+
   use({
-	  'marko-cerovac/material.nvim',
-	  as = 'lighter',
+	  'rose-pine/neovim',
+	  as = 'rose-pine',
 	  config = function()
-		  vim.cmd('colorscheme material')
+		  vim.cmd('colorscheme rose-pine')
 	  end
   })
 

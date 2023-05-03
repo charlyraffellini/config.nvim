@@ -1,6 +1,6 @@
 require("elrafa.set")
 require("elrafa.remap")
-require("elrafa.material")
+-- require("elrafa.material")
 
 -- DO NOT INCLUDE THIS
 -- vim.opt.rtp:append("~/personal/streamer-tools")
