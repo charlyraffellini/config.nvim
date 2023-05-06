@@ -21,15 +21,31 @@ return require('packer').startup(function(use)
 --	  end
  -- })
 
-  use({
-	  'rose-pine/neovim',
-	  as = 'rose-pine',
-	  config = function()
-		  vim.cmd('colorscheme rose-pine')
-	  end
+--  use({
+--	  'rose-pine/neovim',
+--	  as = 'rose-pine',
+--	  config = function()
+--		  vim.cmd('colorscheme rose-pine')
+--	  end
+--  })
+
+ use({
+	  'Mofiqul/vscode.nvim',
+	  as = 'vs-colours'
   })
 
-  use({
+ use {
+     'akinsho/bufferline.nvim',
+     tag = "*",
+     requires = 'nvim-tree/nvim-web-devicons'
+ }
+
+ use {
+  'nvim-lualine/lualine.nvim',
+  requires = { 'nvim-tree/nvim-web-devicons', opt = true }
+ }
+
+ use({
       "folke/trouble.nvim",
       config = function()
           require("trouble").setup {

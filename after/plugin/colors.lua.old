@@ -25,9 +25,14 @@ vim.opt.guicursor = {
 require('rose-pine').setup({
    -- disable_background = true,
     --dark_variant = 'main',
-    -- variant = 'dawn',
-    variant = 'main',
+    variant = 'dawn',
+    -- variant = 'main',
+
     disable_italics = true,
+    dim_nc_background = true,
+	disable_background = false,
+	disable_float_background = false,
+
     highlight_groups = {
 		StatusLine = { fg = "iris", bg = "iris", blend = 10 },
 		StatusLineNC = { fg = "base", bg = "subtle" },
