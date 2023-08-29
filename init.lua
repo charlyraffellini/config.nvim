@@ -7,6 +7,8 @@ local Plug = vim.fn['plug#']
 vim.call('plug#begin', '~/.config/nvim/plugged')
 
 Plug('mg979/vim-visual-multi', {['branch'] = 'master'})
+Plug('RishabhRD/popfix')
+Plug('RishabhRD/nvim-lsputils')
 
 vim.call('plug#end')
 
