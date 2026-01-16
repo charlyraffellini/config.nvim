@@ -132,9 +132,11 @@ local function safe_setup_lsp()
 
     -- run lsp-zero setup guarded to avoid hard errors from older plugin versions
     local ok_setup, err = pcall(function()
-        -- adjust to your lsp-zero usage (presets, defaults, etc.)
-        lspzero.preset("recommended")
-        lspzero.setup()
+        -- lsp-zero v2+: .preset() was removed (see lsp-zero docs).
+        -- Use setup() directly; add options here if you need custom behavior.
+        if type(lspzero.setup) == "function" then
+            lspzero.setup()
+        end
     end)
     if not ok_setup then
         vim.notify(("lsp-zero setup failed: %s"):format(tostring(err)), vim.log.levels.ERROR)
