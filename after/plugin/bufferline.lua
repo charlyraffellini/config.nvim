@@ -17,17 +17,15 @@ require("bufferline").setup({
         show_tab_indicators = true,
         get_element_icon = function(element)
             -- element consists of {filetype: string, path: string, extension: string, directory: string}
-            -- This can be used to change how bufferline fetches the icon
-            -- for an element e.g. a buffer or a tab.
-            -- list of all supported icons: https://github.com/nvim-tree/nvim-web-devicons/blob/master/lua/nvim-web-devicons.lua
-            if element.extension == "jsonl" or element.filetype == "jsonl"
-                then
-                    local loaded, webdev_icons = pcall(require, "nvim-web-devicons")
-                    local fn, api = vim.fn, vim.api
-                    local icon, hl = webdeb_icons.get_icon(fn.fnamemodify(opts.path, ":t"), "json")
-                    return icon, hl
-                else do return end
+            -- Use nvim-web-devicons safely and return an icon and highlight name.
+            local ok, webdev_icons = pcall(require, "nvim-web-devicons")
+            if not ok or not webdev_icons then
+                return nil
             end
+            local filename = element.path or ""
+            local name = vim.fn.fnamemodify(filename, ":t")
+            local icon, hl = webdev_icons.get_icon(name, element.extension, { default = true })
+            return icon, hl
         end
     },
     highlights = {

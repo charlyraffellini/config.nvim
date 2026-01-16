@@ -69,62 +69,91 @@ api.nvim_create_autocmd("FileType", {
 ----------------------------------
 
 
-local lsp = require("lsp-zero")
+-- Safe LSP setup: filter mason names, map common aliases, and avoid hard errors
+local function safe_setup_lsp()
+    if vim.fn.has("nvim-0.11") == 0 then
+        vim.notify("Neovim < 0.11 detected — update to 0.11+ for best lspconfig support", vim.log.levels.WARN)
+    end
 
-lsp.preset("recommended")
+    local ok_zero, lspzero = pcall(require, "lsp-zero")
+    if not ok_zero or not lspzero then
+        vim.notify("lsp-zero not available, skipping LSP setup", vim.log.levels.WARN)
+        return
+    end
 
-lsp.ensure_installed({
-  'tsserver',
-  'rust_analyzer',
-  'pylsp',
-})
+    -- Desired servers (edit to your preferences)
+    local wanted = { "tsserver", "pyright" }
 
--- Fix Undefined global 'vim'
-lsp.nvim_workspace()
+    -- Ensure mason.nvim is initialized before using mason-lspconfig
+    local ok_mason_core, mason = pcall(require, "mason")
+    if ok_mason_core and mason and type(mason.setup) == "function" then
+        local ok, err = pcall(mason.setup)
+        if not ok then
+            vim.notify(("mason.setup() failed: %s"):format(tostring(err)), vim.log.levels.WARN)
+        end
+    else
+        vim.notify("mason.nvim not available; skipping mason-lspconfig setup", vim.log.levels.WARN)
+    end
 
+    local ok_mason, mason_lsp = pcall(require, "mason-lspconfig")
+    if not ok_mason or not mason_lsp or type(mason_lsp.get_available_servers) ~= "function" then
+        -- fallback: try to configure lsp-zero without mason filtering
+        pcall(function() lspzero.setup() end)
+        return
+    end
 
-local cmp = require('cmp')
-local cmp_select = {behavior = cmp.SelectBehavior.Select}
-local cmp_mappings = lsp.defaults.cmp_mappings({
-    ['<C-p>'] = cmp.mapping.select_prev_item(cmp_select),
-    ['<C-n>'] = cmp.mapping.select_next_item(cmp_select),
-    ['<C-y>'] = cmp.mapping.confirm({ select = true }),
-    ["<C-Space>"] = cmp.mapping.complete(),
-})
+    local available = mason_lsp.get_available_servers() or {}
 
-cmp_mappings['<Tab>'] = nil
-cmp_mappings['<S-Tab>'] = nil
-
-lsp.setup_nvim_cmp({
-  mapping = cmp_mappings
-})
-
-lsp.set_preferences({
-    suggest_lsp_servers = false,
-    sign_icons = {
-        error = 'E',
-        warn = 'W',
-        hint = 'H',
-        info = 'I'
+    -- common alias map: map legacy names to mason/lspconfig equivalents
+    local alias_map = {
+        tsserver = "ts_ls",
+        typescript = "ts_ls",
+        typescript_language_server = "ts_ls",
     }
+
+    local ensure = {}
+    for _, name in ipairs(wanted) do
+        if vim.tbl_contains(available, name) then
+            table.insert(ensure, name)
+        else
+            local alias = alias_map[name]
+            if alias and vim.tbl_contains(available, alias) then
+                table.insert(ensure, alias)
+            else
+                vim.notify(("mason-lspconfig: skipping unknown server '%s'"):format(name), vim.log.levels.WARN)
+            end
+        end
+    end
+
+    mason_lsp.setup({
+        ensure_installed = ensure,
+        automatic_installation = true,
+    })
+
+    -- run lsp-zero setup guarded to avoid hard errors from older plugin versions
+    local ok_setup, err = pcall(function()
+        -- adjust to your lsp-zero usage (presets, defaults, etc.)
+        lspzero.preset("recommended")
+        lspzero.setup()
+    end)
+    if not ok_setup then
+        vim.notify(("lsp-zero setup failed: %s"):format(tostring(err)), vim.log.levels.ERROR)
+    end
+end
+
+-- run safely after startup or after Packer finishes
+local aug = vim.api.nvim_create_augroup("elrafa_lsp_setup", { clear = true })
+vim.api.nvim_create_autocmd("VimEnter", {
+  group = aug,
+  once = true,
+  callback = safe_setup_lsp,
 })
-
-lsp.on_attach(function(client, bufnr)
-  local opts = {buffer = bufnr, remap = false}
-
-  vim.keymap.set("n", "gd", function() vim.lsp.buf.definition() end, opts)
-  vim.keymap.set("n", "K", function() vim.lsp.buf.hover() end, opts)
-  vim.keymap.set("n", "<leader>vws", function() vim.lsp.buf.workspace_symbol() end, opts)
-  vim.keymap.set("n", "<leader>vd", function() vim.diagnostic.open_float() end, opts)
-  vim.keymap.set("n", "[d", function() vim.diagnostic.goto_next() end, opts)
-  vim.keymap.set("n", "]d", function() vim.diagnostic.goto_prev() end, opts)
-  vim.keymap.set("n", "<leader>vca", function() vim.lsp.buf.code_action() end, opts)
-  vim.keymap.set("n", "<leader>vrr", function() vim.lsp.buf.references() end, opts)
-  vim.keymap.set("n", "<leader>vrn", function() vim.lsp.buf.rename() end, opts)
-  vim.keymap.set("i", "<C-h>", function() vim.lsp.buf.signature_help() end, opts)
-end)
-
-lsp.setup()
+vim.api.nvim_create_autocmd("User", {
+  pattern = "PackerComplete",
+  group = aug,
+  once = true,
+  callback = safe_setup_lsp,
+})
 
 vim.diagnostic.config({
     virtual_text = true
