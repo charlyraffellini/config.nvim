@@ -57,8 +57,6 @@ This document lists custom key mappings found in the config, the file where each
     - Run CellularAutomaton example
   - n, <leader><leader> → <function>
     - Project-specific mapping (see file)
-  - n, <leader>as → <function>
-    - Toggle autosave (enabled by default)
 
 - after/plugin/metals.lua
   - n, gD → vim.lsp.buf.definition
@@ -202,9 +200,6 @@ This document lists custom key mappings found in the config, the file where each
   - n, <leader>mr → <cmd>CellularAutomaton make_it_rain<CR>
     - Run CellularAutomaton example
   - n, <leader><leader> → <function>
-    - Project-specific mapping (see file)
-  - n, <leader>as → <function>
-    - Toggle autosave (enabled by default)
     - Project-specific mapping (see file)
 
 - after/plugin/metals.lua

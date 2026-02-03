@@ -47,3 +47,8 @@ vim.keymap.set("n", "<leader>mr", "<cmd>CellularAutomaton make_it_rain<CR>");
 vim.keymap.set("n", "<leader><leader>", function()
     vim.cmd("so")
 end)
+
+-- Autosave toggle
+vim.keymap.set("n", "<leader>as", function()
+    require("elrafa.autosave").toggle()
+end, { desc = "Toggle autosave" })

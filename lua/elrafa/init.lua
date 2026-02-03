@@ -1,5 +1,6 @@
 require("elrafa.set")
 require("elrafa.remap")
+require("elrafa.autosave")
 -- require("elrafa.material")
 
 -- DO NOT INCLUDE THIS
