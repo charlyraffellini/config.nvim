@@ -205,7 +205,19 @@ This document lists custom key mappings found in the config, the file where each
     - Project-specific mapping (see file)
   - n, <leader>as → <function>
     - Toggle autosave (enabled by default)
-    - Project-specific mapping (see file)
+
+- netrw (built-in file explorer, opened with <leader>pv)
+  - % → Create new file
+    - Press % then type filename and Enter
+  - d → Create new directory
+    - Press d then type directory name and Enter
+  - R → Rename file/directory
+    - Press R on a file/directory, type new name and Enter
+  - D → Delete file/directory
+    - Press D on a file/directory to delete it
+  - Enter → Open file or enter directory
+  - - (minus) → Go up to parent directory
+  - i → Cycle through view modes (thin, long, wide, tree)
 
 - after/plugin/metals.lua
   - n, gD → vim.lsp.buf.definition
