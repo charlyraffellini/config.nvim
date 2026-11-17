@@ -82,7 +82,7 @@ local function safe_setup_lsp()
     end
 
     -- Desired servers (edit to your preferences)
-    local wanted = { "tsserver", "pyright" }
+    local wanted = { "ts_ls", "pyright" }
 
     -- Ensure mason.nvim is initialized before using mason-lspconfig
     local ok_mason_core, mason = pcall(require, "mason")
